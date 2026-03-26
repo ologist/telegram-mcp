@@ -4725,8 +4725,18 @@ async def _main() -> None:
         await client.get_dialogs()
 
         print("Telegram client started. Running MCP server...")
-        # Use the asynchronous entrypoint instead of mcp.run()
-        await mcp.run_stdio_async()
+        transport = os.getenv("MCP_TRANSPORT", "stdio")
+        if transport == "http":
+            import uvicorn
+            host = os.getenv("MCP_HOST", "0.0.0.0")
+            port = int(os.getenv("MCP_PORT", "8001"))
+            print(f"HTTP transport on {host}:{port}", file=sys.stderr)
+            starlette_app = mcp.streamable_http_app()
+            config = uvicorn.Config(starlette_app, host=host, port=port, log_level="info")
+            server = uvicorn.Server(config)
+            await server.serve()
+        else:
+            await mcp.run_stdio_async()
     except Exception as e:
         print(f"Error starting client: {e}", file=sys.stderr)
         if isinstance(e, sqlite3.OperationalError) and "database is locked" in str(e):

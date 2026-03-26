@@ -39,9 +39,10 @@ ENV TELEGRAM_API_HASH=""
 ENV TELEGRAM_SESSION_NAME="telegram_mcp_session"
 # Or provide the session string directly
 ENV TELEGRAM_SESSION_STRING=""
+ENV MCP_TRANSPORT=http
+ENV FASTMCP_HOST=0.0.0.0
+ENV FASTMCP_PORT=8001
 
-# Expose any ports if the application were a web server (not needed for stdio MCP)
-# EXPOSE 8000
+EXPOSE 8001
 
-# Define the command to run the application
-CMD ["python", "main.py"] 
+CMD ["python", "main.py"]
